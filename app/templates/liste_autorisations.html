@@ -1,0 +1,156 @@
+{% extends "base.html" %} {% block content %}
+<div class="row mb-4">
+  <div class="col-md-6">
+    <h1>Liste des Autorisations de Sortie</h1>
+  </div>
+  <div class="col-md-6 text-end">
+    {% if current_user.role == 'HR' %}
+    <a
+      href="{{ url_for('main.nouvelle_autorisation') }}"
+      class="btn btn-primary"
+    >
+      <i class="fas fa-plus"></i> Nouvelle Autorisation
+    </a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Search input -->
+<div class="row mb-3">
+  <div class="col-md-4">
+    <div class="input-group">
+      <span class="input-group-text">
+        <i class="fas fa-search"></i>
+      </span>
+      <input
+        type="text"
+        id="searchInput"
+        class="form-control"
+        placeholder="Rechercher..."
+        autocomplete="off"
+      />
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <table class="table" id="autorisationsTable">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Date de sortie</th>
+          <th>Heure de sortie</th>
+          <th>Date de retour</th>
+          <th>Heure de retour</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for autorisation in autorisations %}
+        <tr>
+          <td>{{ autorisation.nom }}</td>
+          <td>{{ autorisation.prenom }}</td>
+          <td>{{ autorisation.date_sortie.strftime('%d/%m/%Y') }}</td>
+          <td>{{ autorisation.heure_sortie.strftime('%H:%M') }}</td>
+          <td>{{ autorisation.date_retour.strftime('%d/%m/%Y') }}</td>
+          <td>{{ autorisation.heure_retour.strftime('%H:%M') }}</td>
+          <td>
+            <span
+              class="badge {% if autorisation.statut == 'Approuvé' %}bg-success{% elif autorisation.statut == 'Refusé' %}bg-danger{% else %}bg-warning{% endif %}"
+            >
+              {{ autorisation.statut }}
+            </span>
+          </td>
+          <td>
+            <a
+              href="{{ url_for('main.voir_autorisation', id=autorisation.id) }}"
+              class="btn btn-sm btn-info"
+            >
+              <i class="fas fa-eye"></i> Voir
+            </a>
+            {% if autorisation.statut == 'En attente' and current_user.role ==
+            'DG' %}
+            <a
+              href="{{ url_for('main.approuver_autorisation', id=autorisation.id) }}"
+              class="btn btn-sm btn-success"
+            >
+              <i class="fas fa-check"></i> Approuver
+            </a>
+            <a
+              href="{{ url_for('main.refuser_autorisation', id=autorisation.id) }}"
+              class="btn btn-sm btn-danger"
+            >
+              <i class="fas fa-times"></i> Refuser
+            </a>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr id="noResults" style="display: none">
+          <td colspan="8" class="text-center">Aucun résultat trouvé</td>
+        </tr>
+        <tr
+          id="noData"
+          {%
+          if
+          autorisations
+          %}style="display: none;"
+          {%
+          endif
+          %}
+        >
+          <td colspan="8" class="text-center">Aucune autorisation trouvée</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %} {% block scripts %} {{ super() }}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("searchInput");
+    const table = document.getElementById("autorisationsTable");
+    const rows = table.getElementsByTagName("tr");
+    const noResults = document.getElementById("noResults");
+    const noData = document.getElementById("noData");
+
+    searchInput.addEventListener("keyup", function () {
+      const searchTerm = searchInput.value.toLowerCase();
+      let hasResults = false;
+
+      // Start from 1 to skip header row
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (row.id === "noResults" || row.id === "noData") continue;
+
+        const cells = row.getElementsByTagName("td");
+        let rowText = "";
+
+        // Combine text from first two columns (nom and prénom)
+        for (let j = 0; j < 2; j++) {
+          rowText += cells[j].textContent.toLowerCase() + " ";
+        }
+
+        if (rowText.includes(searchTerm)) {
+          row.style.display = "";
+          hasResults = true;
+        } else {
+          row.style.display = "none";
+        }
+      }
+
+      // Show/hide "No results" message
+      if (noResults) {
+        noResults.style.display = hasResults ? "none" : "";
+      }
+      if (noData) {
+        noData.style.display = "none";
+      }
+    });
+  });
+</script>
+{% endblock %}

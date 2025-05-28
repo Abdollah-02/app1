@@ -1,0 +1,128 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mt-4">
+  <div class="row mb-4">
+    <div class="col">
+      <h1>Modifier l'Autorisation de Sortie</h1>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="nom" class="form-label">Nom</label>
+            <input
+              type="text"
+              class="form-control"
+              id="nom"
+              name="nom"
+              value="{{ autorisation.nom }}"
+              required
+            />
+          </div>
+          <div class="col-md-6">
+            <label for="prenom" class="form-label">Prénom</label>
+            <input
+              type="text"
+              class="form-control"
+              id="prenom"
+              name="prenom"
+              value="{{ autorisation.prenom }}"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="date_sortie" class="form-label">Date de sortie</label>
+            <input
+              type="date"
+              class="form-control"
+              id="date_sortie"
+              name="date_sortie"
+              value="{{ autorisation.date_sortie.strftime('%Y-%m-%d') }}"
+              required
+            />
+          </div>
+          <div class="col-md-6">
+            <label for="heure_sortie" class="form-label">Heure de sortie</label>
+            <input
+              type="time"
+              class="form-control"
+              id="heure_sortie"
+              name="heure_sortie"
+              value="{{ autorisation.heure_sortie.strftime('%H:%M') }}"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="date_retour" class="form-label">Date de retour</label>
+            <input
+              type="date"
+              class="form-control"
+              id="date_retour"
+              name="date_retour"
+              value="{{ autorisation.date_retour.strftime('%Y-%m-%d') }}"
+              required
+            />
+          </div>
+          <div class="col-md-6">
+            <label for="heure_retour" class="form-label">Heure de retour</label>
+            <input
+              type="time"
+              class="form-control"
+              id="heure_retour"
+              name="heure_retour"
+              value="{{ autorisation.heure_retour.strftime('%H:%M') }}"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="destination" class="form-label">Destination</label>
+          <input
+            type="text"
+            class="form-control"
+            id="destination"
+            name="destination"
+            value="{{ autorisation.destination }}"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="motif" class="form-label">Motif de sortie</label>
+          <textarea
+            class="form-control"
+            id="motif"
+            name="motif"
+            rows="3"
+            required
+          >
+{{ autorisation.motif }}</textarea
+          >
+        </div>
+
+        <div class="d-flex justify-content-between">
+          <a
+            href="{{ url_for('main.voir_autorisation', id=autorisation.id) }}"
+            class="btn btn-secondary"
+            >Annuler</a
+          >
+          <button type="submit" class="btn btn-primary">
+            Enregistrer les modifications
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

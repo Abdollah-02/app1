@@ -1,0 +1,287 @@
+{% extends "base.html" %} {% block content %}
+<div class="row mb-4">
+  <div class="col-md-8">
+    <h2>Modifier la Demande de Vacances</h2>
+  </div>
+  <div class="col-md-4 text-end">
+    <a
+      href="{{ url_for('vacances.voir_demande', id=demande.id) }}"
+      class="btn btn-secondary"
+    >
+      <i class="fas fa-arrow-left"></i> Retour
+    </a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <form method="POST">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="unite" class="form-label">Unité</label>
+            <input
+              type="text"
+              class="form-control"
+              id="unite"
+              name="unite"
+              value="{{ demande.unite }}"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="type_vacances" class="form-label">Type de Vacances</label>
+            <select
+              class="form-control"
+              id="type_vacances"
+              name="type_vacances"
+              required
+            >
+              <option value="">Sélectionnez...</option>
+              <option value="Annuel" {% if demande.type_vacances == 'Annuel' %}selected{% endif %}>Annuel</option>
+              <option value="Compensatoire" {% if demande.type_vacances == 'Compensatoire' %}selected{% endif %}>Compensatoire</option>
+              <option value="RECUPERATION" {% if demande.type_vacances == 'RECUPERATION' %}selected{% endif %}>RECUPERATION</option>
+              <option value="EXCEPTIONNEL" {% if demande.type_vacances == 'EXCEPTIONNEL' %}selected{% endif %}>EXCEPTIONNEL</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="nom_prenom" class="form-label">Nom et Prénom</label>
+            <input
+              type="text"
+              class="form-control"
+              id="nom_prenom"
+              name="nom_prenom"
+              value="{{ demande.nom_prenom }}"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="emploi" class="form-label">Emploi</label>
+            <input
+              type="text"
+              class="form-control"
+              id="emploi"
+              name="emploi"
+              value="{{ demande.emploi }}"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="interet" class="form-label">Intérêt</label>
+            <input
+              type="text"
+              class="form-control"
+              id="interet"
+              name="interet"
+              value="{{ demande.interet }}"
+            />
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="nombre_jours" class="form-label">Nombre de Jours</label>
+            <input
+              type="number"
+              class="form-control"
+              id="nombre_jours"
+              name="nombre_jours"
+              value="{{ demande.nombre_jours }}"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="date_sortie" class="form-label">Date de Sortie</label>
+            <input
+              type="date"
+              class="form-control"
+              id="date_sortie"
+              name="date_sortie"
+              value="{{ demande.date_sortie.strftime('%Y-%m-%d') }}"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="date_entree" class="form-label">Date d'Entrée</label>
+            <input
+              type="date"
+              class="form-control"
+              id="date_entree"
+              name="date_entree"
+              value="{{ demande.date_entree.strftime('%Y-%m-%d') }}"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="lieu_residence" class="form-label"
+              >Lieu de Résidence</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="lieu_residence"
+              name="lieu_residence"
+              value="{{ demande.lieu_residence }}"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="nom_alternatif" class="form-label"
+              >Nom Alternatif</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="nom_alternatif"
+              name="nom_alternatif"
+              value="{{ demande.nom_alternatif }}"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-12">
+          <h4 class="mb-3">Cadre de Services de Gestion</h4>
+        </div>
+        <div class="col-md-3">
+          <div class="mb-3">
+            <label for="residuel" class="form-label">Résiduel</label>
+            <input
+              type="number"
+              class="form-control"
+              id="residuel"
+              name="residuel"
+              value="{{ demande.residuel }}"
+              min="0"
+              required
+            />
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="mb-3">
+            <label for="annee_exercice" class="form-label">Année d'exercice (optionnel)</label>
+            <input
+              type="number"
+              class="form-control"
+              id="annee_exercice"
+              name="annee_exercice"
+              value="{{ demande.annee_exercice }}"
+              placeholder="Ex: 2023 pour congés de 2023"
+            />
+            <small class="form-text text-muted">Laissez vide pour l'année en cours</small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="mb-3">
+            <label for="annee_en_cours" class="form-label">Année en Cours</label>
+            <input
+              type="number"
+              class="form-control"
+              id="annee_en_cours"
+              name="annee_en_cours"
+              value="{{ demande.annee_en_cours }}"
+              min="0"
+              required
+            />
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="mb-3">
+            <label for="total" class="form-label">Total</label>
+            <input
+              type="number"
+              class="form-control"
+              id="total"
+              name="total"
+              value="{{ demande.total }}"
+              min="0"
+              required
+              readonly
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-12">
+          <label for="residuel_clarification" class="form-label">Clarification des jours restants</label>
+          <input
+            type="text"
+            class="form-control"
+            id="residuel_clarification"
+            name="residuel_clarification"
+            value="{{ demande.residuel_clarification }}"
+            placeholder="Ex: année passée"
+          />
+        </div>
+      </div>
+
+      <div class="text-end mt-4">
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-save"></i> Enregistrer les Modifications
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+  const form = document.querySelector('form');
+  form.addEventListener('submit', function(e) {
+    if (!form.checkValidity()) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    // Date validation
+    const dateEntree = new Date(document.getElementById('date_entree').value);
+    const dateSortie = new Date(document.getElementById('date_sortie').value);
+    
+    if (dateEntree < dateSortie) {
+      e.preventDefault();
+      alert('La date d\'entrée doit être après la date de sortie');
+      return false;
+    }
+  });
+
+  function calculateTotal() {
+    const residuel = parseFloat(document.getElementById('residuel').value) || 0;
+    const anneeEnCours = parseFloat(document.getElementById('annee_en_cours').value) || 0;
+    const total = residuel + anneeEnCours;
+    document.getElementById('total').value = total;
+  }
+
+  // Add event listeners for input changes
+  document.getElementById('residuel').addEventListener('input', calculateTotal);
+  document.getElementById('annee_en_cours').addEventListener('input', calculateTotal);
+
+  // Initial calculation on window load
+  window.addEventListener('load', calculateTotal);
+
+  // Prevent negative numbers
+  const numberInputs = document.querySelectorAll('input[type="number"]');
+  numberInputs.forEach(input => {
+    input.addEventListener('input', function() {
+      if (this.value < 0) {
+        this.value = 0;
+      }
+      if (this.id === 'residuel' || this.id === 'annee_en_cours') {
+        calculateTotal();
+      }
+    });
+  });
+})();
+</script>
+{% endblock %}

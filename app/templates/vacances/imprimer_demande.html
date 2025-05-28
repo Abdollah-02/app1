@@ -1,0 +1,298 @@
+{% extends "base.html" %} {% block content %} {% if demande.statut == 'Approuvé'
+%}
+<style>
+  .title {
+    background-color: #28a745 !important; /* Bootstrap success green */
+    color: white !important;
+  }
+</style>
+{% else %}
+<style>
+  .title {
+    background-color: #f8f9fa !important;
+    color: black !important;
+    border: 1px solid #dee2e6 !important;
+  }
+</style>
+{% endif %}
+
+<style>
+  /* Styles for both screen and print */
+  .title {
+    text-align: center;
+    font-size: 16pt;
+    font-weight: bold;
+    margin: 10mm 0;
+    padding: 3mm;
+    display: block !important;
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Screen-specific styles */
+  @media screen {
+    .print-container {
+      max-width: 210mm;
+      margin: 20px auto;
+      padding: 20mm;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background: white;
+    }
+
+    .print-actions {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    /* Ensure title styles are visible on screen */
+    .title {
+      display: block !important;
+      visibility: visible !important;
+    }
+  }
+
+  /* Print-specific styles */
+  @media print {
+    /* Hide non-printable elements */
+    nav,
+    .btn,
+    footer {
+      display: none !important;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Helvetica, Arial, sans-serif;
+    }
+
+    /* Keep the title styles in print */
+    .title {
+      display: block !important;
+      visibility: visible !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    /* A4 size simulation */
+    .print-container {
+      width: 210mm;
+      min-height: 297mm;
+      padding: 20mm;
+      margin: 0 auto;
+    }
+
+    /* Logo and header styling */
+    .header {
+      position: relative;
+      height: 40mm;
+      margin-bottom: 10mm;
+    }
+
+    .logo {
+      position: absolute;
+      left: 10mm;
+      top: 0;
+      width: 25mm;
+      height: 25mm;
+    }
+
+    .company-info {
+      position: absolute;
+      left: 45mm;
+      top: 0;
+      width: calc(100% - 45mm);
+      text-align: center;
+    }
+
+    .company-name {
+      font-size: 16pt;
+      font-weight: bold;
+      margin-bottom: 3mm;
+    }
+
+    .company-desc {
+      font-size: 11pt;
+      margin: 1mm 0;
+    }
+
+    .separator {
+      border-top: 0.5pt solid black;
+      margin: 5mm 0;
+    }
+
+    /* Content styling */
+    .content {
+      font-size: 11pt;
+      line-height: 1.5;
+    }
+
+    .field {
+      margin: 3mm 0;
+    }
+
+    .field-label {
+      font-weight: bold;
+      display: inline-block;
+      width: 40mm;
+    }
+
+    /* Signature section */
+    .signature {
+      margin-top: 15mm;
+      text-align: right;
+    }
+
+    .signature-title {
+      font-weight: bold;
+      font-size: 11pt;
+      margin-bottom: 2mm;
+    }
+
+    .signature-box {
+      border: 0.5pt solid #ccc;
+      padding: 5mm;
+      width: 50mm;
+      float: right;
+      text-align: center;
+      border-radius: 2mm;
+    }
+
+    /* Footer */
+    .footer {
+      position: fixed;
+      bottom: 20mm;
+      width: calc(100% - 40mm);
+      font-size: 8pt;
+      font-style: italic;
+      border-top: 0.5pt solid #ccc;
+      padding-top: 2mm;
+    }
+  }
+</style>
+
+<!-- Print Actions (only visible on screen) -->
+<div class="print-actions">
+  <button onclick="window.print()" class="btn btn-primary">
+    <i class="fas fa-print"></i> Imprimer
+  </button>
+  <a
+    href="{{ url_for('vacances.voir_demande', id=demande.id) }}"
+    class="btn btn-secondary"
+  >
+    <i class="fas fa-arrow-left"></i> Retour
+  </a>
+</div>
+
+<div class="print-container">
+  <!-- Header -->
+  <div class="header">
+    <img
+      src="{{ url_for('static', filename='images/gmi-logo.png') }}"
+      alt="Logo"
+      class="logo"
+    />
+    <div class="company-info">
+      <div class="company-name">EURL G.M.I ALGÉRIE</div>
+      <div class="company-desc">
+        FABRICATION & MONTAGE DES ÉQUIPEMENTS ÉLECTRIQUES ET HYDRAULIQUES
+      </div>
+      <div class="company-desc">GROUPES ÉLECTROGÈNES, GROUPES DE SOUDAGE</div>
+      <div class="company-desc">ZONE INDUSTRIEL Oued Sly W.chlef</div>
+      <div class="company-desc">
+        Tél: 020656464 / 020656666 / Fax: 020656588
+      </div>
+    </div>
+  </div>
+
+  <div class="separator"></div>
+
+  <!-- Title -->
+  <div class="title">
+    {% if demande.statut == 'Approuvé' %} TITRE DE CONGÉ N°: {{ '%03d' %
+    demande.id }}/{{ demande.date_creation.year }} {% else %} DEMANDE DE
+    VACANCES N°: {{ '%03d' % demande.id }}/{{ demande.date_creation.year }} {%
+    endif %}
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <div class="field">
+      <span class="field-label">NOM ET PRENOM:</span>
+      {{ demande.nom_prenom }}
+    </div>
+
+    <div class="field">
+      <span class="field-label">FONCTION:</span>
+      {{ demande.emploi }}
+    </div>
+
+    <div class="field">
+      <span class="field-label">EXERCICE:</span>
+      {% if demande.annee_exercice %} {{ demande.annee_exercice }}/{{
+      demande.annee_exercice + 1 }} {% else %} {{ demande.date_creation.year - 1
+      }}/{{ demande.date_creation.year }} {% endif %}
+    </div>
+
+    <div class="field">
+      <span class="field-label">NOMBRE DE JOURS:</span>
+      {{ demande.nombre_jours }} JOURS
+    </div>
+
+    <div class="field">
+      <span class="field-label">TYPE DE CONGÉ:</span>
+      {{ demande.type_vacances }}
+    </div>
+
+    <div class="field">
+      <span class="field-label">DATE DE SORTIE:</span>
+      {{ demande.date_sortie.strftime('%d/%m/%Y') }}
+    </div>
+
+    <div class="field">
+      <span class="field-label">DATE DE RETOUR:</span>
+      {{ demande.date_entree.strftime('%d/%m/%Y') }}
+    </div>
+
+    <div class="field">
+      <span class="field-label">PERIODE RESTANTE:</span>
+      {{ demande.residuel - demande.nombre_jours }} JOURS {% if
+      demande.residuel_clarification %} ({{ demande.residuel_clarification }})
+      {% endif %}
+    </div>
+
+    <div class="field">
+      <span class="field-label">ADRESSE:</span>
+      {{ demande.lieu_residence }}
+    </div>
+  </div>
+
+  <!-- Signature Section -->
+  <div class="signature">
+    <div style="text-align: right; margin-bottom: 5mm">
+      Oued Sly le: {{ demande.date_creation.strftime('%d/%m/%Y') }}
+    </div>
+
+    <div class="signature-box">
+      <div class="signature-title">Le Directeur Général</div>
+      {% if demande.signature_data %}
+      <img
+        src="{{ demande.signature_data }}"
+        alt="Signature"
+        style="width: 20mm; height: 10mm"
+      />
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div style="float: left">
+      Document généré le: {{ datetime.now().strftime('%d/%m/%Y à %H:%M') }}
+    </div>
+    <div style="float: right">Page 1/1</div>
+  </div>
+</div>
+
+{% endblock %}

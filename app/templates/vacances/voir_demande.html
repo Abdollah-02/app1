@@ -1,0 +1,312 @@
+{% extends "base.html" %} {% block content %}
+<div class="row mb-4">
+  <div class="col-md-8">
+    {% if demande.statut == 'Approuvé' %}
+    <h2>
+      TITRE DE CONGÉ N°: {{ '%03d' % demande.id }}/{{ demande.date_creation.year
+      }}
+    </h2>
+    {% else %}
+    <h2>Détails de la Demande de Vacances</h2>
+    {% endif %}
+  </div>
+  <div class="col-md-4 text-end">
+    {% if demande.statut == 'En attente' and current_user.role == 'DG' %}
+    <a
+      href="{{ url_for('vacances.approuver_demande', id=demande.id) }}"
+      class="btn btn-success"
+    >
+      <i class="fas fa-check"></i> Approuver
+    </a>
+    <a
+      href="{{ url_for('vacances.refuser_demande', id=demande.id) }}"
+      class="btn btn-danger"
+    >
+      <i class="fas fa-times"></i> Refuser
+    </a>
+    {% endif %} {% if current_user.role == 'DG' %}
+    <a
+      href="{{ url_for('vacances.modifier_demande', id=demande.id) }}"
+      class="btn btn-warning"
+    >
+      <i class="fas fa-edit"></i> Modifier
+    </a>
+    <a
+      href="{{ url_for('vacances.supprimer_demande', id=demande.id) }}"
+      class="btn btn-danger"
+      onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette demande ?');"
+    >
+      <i class="fas fa-trash"></i> Supprimer
+    </a>
+    {% endif %}
+    <a
+      href="{{ url_for('vacances.telecharger_pdf', id=demande.id) }}"
+      class="btn btn-primary"
+    >
+      <i class="fas fa-file-pdf"></i> Télécharger PDF
+    </a>
+    <a
+      href="{{ url_for('vacances.liste_vacances') }}"
+      class="btn btn-secondary"
+    >
+      <i class="fas fa-arrow-left"></i> Retour
+    </a>
+    <a
+      href="{{ url_for('vacances.imprimer_demande', id=demande.id) }}"
+      class="btn btn-info"
+    >
+      <i class="fas fa-print"></i> Imprimer
+    </a>
+  </div>
+</div>
+
+{% if demande.statut == 'Approuvé' %}
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <dl class="row">
+          <dt class="col-sm-4">NOM ET PRENOM</dt>
+          <dd class="col-sm-8">{{ demande.nom_prenom }}</dd>
+
+          <dt class="col-sm-4">FONCTION</dt>
+          <dd class="col-sm-8">{{ demande.emploi }}</dd>
+
+          <dt class="col-sm-4">EXERCICE</dt>
+          <dd class="col-sm-8">
+            {{ demande.date_creation.year - 1 }}/{{ demande.date_creation.year
+            }}
+          </dd>
+
+          <dt class="col-sm-4">NOMBRE DE JOURS</dt>
+          <dd class="col-sm-8">{{ demande.nombre_jours }} JOURS</dd>
+
+          <dt class="col-sm-4">RECUPERATION</dt>
+          <dd class="col-sm-8">/</dd>
+        </dl>
+      </div>
+      <div class="col-md-6">
+        <dl class="row">
+          <dt class="col-sm-4">EXCEPTIONNEL</dt>
+          <dd class="col-sm-8">/</dd>
+
+          <dt class="col-sm-4">DATE DE SORTIE</dt>
+          <dd class="col-sm-8">
+            {{ demande.date_sortie.strftime('%d/%m/%Y') }}
+          </dd>
+
+          <dt class="col-sm-4">DATE DE RETOUR</dt>
+          <dd class="col-sm-8">
+            {{ demande.date_entree.strftime('%d/%m/%Y') }}
+          </dd>
+
+          <dt class="col-sm-4">PERIODE RESTANTE</dt>
+          <dd class="col-sm-8">
+            {{ demande.residuel - demande.nombre_jours }} JOURS
+          </dd>
+
+          <dt class="col-sm-4">ADRESSE</dt>
+          <dd class="col-sm-8">{{ demande.lieu_residence }}</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-12 text-end">
+        <p>OUED SLY le: {{ demande.date_creation.strftime('%d/%m/%Y') }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="card mb-4">
+  <div class="card-header">
+    <h4>Informations Générales</h4>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <dl class="row">
+          <dt class="col-sm-4">Unité</dt>
+          <dd class="col-sm-8">{{ demande.unite }}</dd>
+
+          <dt class="col-sm-4">Type de Vacances</dt>
+          <dd class="col-sm-8">{{ demande.type_vacances }}</dd>
+
+          <dt class="col-sm-4">Nom et Prénom</dt>
+          <dd class="col-sm-8">{{ demande.nom_prenom }}</dd>
+
+          <dt class="col-sm-4">Emploi</dt>
+          <dd class="col-sm-8">{{ demande.emploi }}</dd>
+
+          <dt class="col-sm-4">Intérêt</dt>
+          <dd class="col-sm-8">{{ demande.interet or 'Non spécifié' }}</dd>
+        </dl>
+      </div>
+      <div class="col-md-6">
+        <dl class="row">
+          <dt class="col-sm-4">Nombre de Jours</dt>
+          <dd class="col-sm-8">{{ demande.nombre_jours }}</dd>
+
+          <dt class="col-sm-4">Date de Sortie</dt>
+          <dd class="col-sm-8">
+            {{ demande.date_sortie.strftime('%d/%m/%Y') }}
+          </dd>
+
+          <dt class="col-sm-4">Date d'Entrée</dt>
+          <dd class="col-sm-8">
+            {{ demande.date_entree.strftime('%d/%m/%Y') }}
+          </dd>
+
+          <dt class="col-sm-4">Lieu de Résidence</dt>
+          <dd class="col-sm-8">{{ demande.lieu_residence }}</dd>
+
+          <dt class="col-sm-4">Nom Alternatif</dt>
+          <dd class="col-sm-8">
+            {{ demande.nom_alternatif or 'Non spécifié' }}
+          </dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header">
+    <h4>Cadre de Services de Gestion</h4>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body text-center">
+            <h5>Résiduel</h5>
+            <p class="h3">{{ demande.residuel or '0' }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body text-center">
+            <h5>Année en Cours</h5>
+            <p class="h3">{{ demande.annee_en_cours or '0' }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body text-center">
+            <h5>Total</h5>
+            <p class="h3">{{ demande.total or '0' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header">
+    <h4>Avis et Signatures</h4>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <h5>Avis d'Intérêt Direct</h5>
+        <p>{{ demande.avis_interet_direct or 'Pas encore d\'avis' }}</p>
+      </div>
+      <div class="col-md-6">
+        <h5>Avis du Directeur Général</h5>
+        <p>{{ demande.avis_directeur_general or 'En attente de décision' }}</p>
+        {% if demande.signature_dg %}
+        <div class="alert alert-success">
+          <i class="fas fa-check-circle"></i> Document approuvé par le DG
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h4>Métadonnées</h4>
+  </div>
+  <div class="card-body">
+    <dl class="row">
+      <dt class="col-sm-3">Statut</dt>
+      <dd class="col-sm-9">
+        <span
+          class="badge {% if demande.statut == 'Approuvé' %}bg-success{% elif demande.statut == 'Refusé' %}bg-danger{% else %}bg-warning{% endif %}"
+        >
+          {{ demande.statut }}
+        </span>
+      </dd>
+
+      <dt class="col-sm-3">Date de Création</dt>
+      <dd class="col-sm-9">
+        {{ demande.date_creation.strftime('%d/%m/%Y %H:%M') }}
+      </dd>
+
+      <dt class="col-sm-3">Créé par</dt>
+      <dd class="col-sm-9">{{ demande.createur }}</dd>
+    </dl>
+  </div>
+</div>
+{% endif %}
+
+<style type="text/css" media="print">
+  @media print {
+    .no-print,
+    .no-print * {
+      display: none !important;
+    }
+
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    .card {
+      border: none;
+    }
+
+    .card-header {
+      background-color: white !important;
+      border-bottom: 1px solid #000;
+    }
+
+    /* Add the company header for printing */
+    .print-header {
+      display: block !important;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .print-header h1 {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .print-header p {
+      font-size: 12px;
+      margin: 2px 0;
+    }
+  }
+
+  /* Hide print header by default */
+  .print-header {
+    display: none;
+  }
+</style>
+
+<!-- Print Header (hidden by default, shown only when printing) -->
+<div class="print-header">
+  <h1>EURL G.M.I ALGÉRIE</h1>
+  <p>FABRICATION & MONTAGE DES ÉQUIPEMENTS ÉLECTRIQUES ET HYDRAULIQUES</p>
+  <p>GROUPES ÉLECTROGÈNES, GROUPES DE SOUDAGE</p>
+  <p>ZONE INDUSTRIELLE Oued Sly W. Chlef</p>
+  <p>Tél: 020656464 / 020656666 | Fax: 020656588</p>
+  <hr />
+</div>
+{% endblock %}

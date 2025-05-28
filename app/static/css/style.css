@@ -1,0 +1,75 @@
+/* General styles */
+body {
+  background-color: #f8f9fa;
+}
+
+/* Card styles */
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  margin-bottom: 1.5rem;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Table styles */
+.table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+/* Print styles */
+@media print {
+  body {
+    background-color: white;
+  }
+
+  .autorisation-section {
+    border: 1px solid #dee2e6;
+    padding: 20mm;
+    margin-bottom: 20mm;
+  }
+
+  .page-break {
+    page-break-after: always;
+  }
+
+  /* Hide navigation and buttons when printing */
+  .navbar,
+  .btn {
+    display: none !important;
+  }
+}
+
+/* Form styles */
+.form-label {
+  font-weight: 500;
+}
+
+/* Badge styles */
+.badge {
+  font-size: 0.875rem;
+  padding: 0.35em 0.65em;
+}
+
+/* Button styles */
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* Print layout */
+.print-section {
+  max-width: 210mm; /* A4 width */
+  margin: 0 auto;
+  background: white;
+  padding: 20px;
+}
+
+@media screen {
+  .print-section {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+}

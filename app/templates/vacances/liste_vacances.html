@@ -1,0 +1,98 @@
+{% extends "base.html" %} {% block content %}
+<div class="row mb-4">
+  <div class="col-md-6">
+    <h2>Gestion des Demandes de Vacances</h2>
+  </div>
+  <div class="col-md-6 text-end">
+    <a
+      href="{{ url_for('vacances.nouvelle_demande') }}"
+      class="btn btn-primary"
+    >
+      <i class="fas fa-plus"></i> Nouvelle Demande
+    </a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nom et Prénom</th>
+            <th>Type</th>
+            <th>Unité</th>
+            <th>Date de Sortie</th>
+            <th>Date d'Entrée</th>
+            <th>Nombre de Jours</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for demande in demandes %}
+          <tr>
+            <td>{{ demande.nom_prenom }}</td>
+            <td>{{ demande.type_vacances }}</td>
+            <td>{{ demande.unite }}</td>
+            <td>{{ demande.date_sortie.strftime('%d/%m/%Y') }}</td>
+            <td>{{ demande.date_entree.strftime('%d/%m/%Y') }}</td>
+            <td>{{ demande.nombre_jours }}</td>
+            <td>
+              <span
+                class="badge {% if demande.statut == 'Approuvé' %}bg-success{% elif demande.statut == 'Refusé' %}bg-danger{% else %}bg-warning{% endif %}"
+              >
+                {{ demande.statut }}
+              </span>
+            </td>
+            <td>
+              <a
+                href="{{ url_for('vacances.voir_demande', id=demande.id) }}"
+                class="btn btn-sm btn-info"
+              >
+                <i class="fas fa-eye"></i> Voir
+              </a>
+              {% if demande.statut == 'En attente' and current_user.role == 'DG'
+              %}
+              <a
+                href="{{ url_for('vacances.approuver_demande', id=demande.id) }}"
+                class="btn btn-sm btn-success"
+              >
+                <i class="fas fa-check"></i> Approuver
+              </a>
+              <a
+                href="{{ url_for('vacances.refuser_demande', id=demande.id) }}"
+                class="btn btn-sm btn-danger"
+              >
+                <i class="fas fa-times"></i> Refuser
+              </a>
+              {% endif %} {% if current_user.role == 'DG' %}
+              <a
+                href="{{ url_for('vacances.modifier_demande', id=demande.id) }}"
+                class="btn btn-sm btn-warning"
+              >
+                <i class="fas fa-edit"></i> Modifier
+              </a>
+              <a
+                href="{{ url_for('vacances.supprimer_demande', id=demande.id) }}"
+                class="btn btn-sm btn-danger"
+                onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette demande ?');"
+              >
+                <i class="fas fa-trash"></i> Supprimer
+              </a>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="8" class="text-center">
+              Aucune demande de vacances trouvée
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "base.html" %} {% block content %}
+<div class="row mb-5">
+  <!-- Demandes de Vacances Card -->
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-body text-center">
+        <i class="fas fa-calendar fa-4x mb-3 text-primary"></i>
+        <h3 class="card-title">Demandes de Vacances</h3>
+        <p class="card-text">Gérer les demandes de congés et de vacances</p>
+        <a
+          href="{{ url_for('vacances.liste_vacances') }}"
+          class="btn btn-primary"
+        >
+          <i class="fas fa-list"></i> Liste des Demandes
+        </a>
+        {% if current_user.is_authenticated %}
+        <a
+          href="{{ url_for('vacances.nouvelle_demande') }}"
+          class="btn btn-success"
+        >
+          <i class="fas fa-plus"></i> Nouvelle Demande
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Autorisations de Sortie Card -->
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-body text-center">
+        <i class="fas fa-file-alt fa-4x mb-3 text-primary"></i>
+        <h3 class="card-title">Autorisations de Sortie</h3>
+        <p class="card-text">Gérer les autorisations de sortie</p>
+        <a
+          href="{{ url_for('main.liste_autorisations') }}"
+          class="btn btn-primary"
+        >
+          <i class="fas fa-list"></i> Liste des Autorisations
+        </a>
+        {% if current_user.role == 'HR' %}
+        <a
+          href="{{ url_for('main.nouvelle_autorisation') }}"
+          class="btn btn-success"
+        >
+          <i class="fas fa-plus"></i> Nouvelle Autorisation
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Activity Section -->
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h4>Activités Récentes</h4>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <!-- Recent Vacation Requests -->
+          <div class="col-md-6">
+            <h5 class="mb-3">Dernières Demandes de Vacances</h5>
+            {% if demandes_vacances %}
+            <div class="list-group">
+              {% for demande in demandes_vacances %}
+              <a
+                href="{{ url_for('vacances.voir_demande', id=demande.id) }}"
+                class="list-group-item list-group-item-action"
+              >
+                <div class="d-flex w-100 justify-content-between">
+                  <h6 class="mb-1">{{ demande.nom_prenom }}</h6>
+                  <small
+                    >{{ demande.date_creation.strftime('%d/%m/%Y') }}</small
+                  >
+                </div>
+                <p class="mb-1">
+                  {{ demande.type_vacances }} - {{ demande.nombre_jours }} jours
+                </p>
+                <small class="text-muted">Statut: {{ demande.statut }}</small>
+              </a>
+              {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted">Aucune demande de vacances récente</p>
+            {% endif %}
+          </div>
+
+          <!-- Recent Authorizations -->
+          <div class="col-md-6">
+            <h5 class="mb-3">Dernières Autorisations</h5>
+            {% if autorisations %}
+            <div class="list-group">
+              {% for autorisation in autorisations %}
+              <a
+                href="{{ url_for('main.voir_autorisation', id=autorisation.id) }}"
+                class="list-group-item list-group-item-action"
+              >
+                <div class="d-flex w-100 justify-content-between">
+                  <h6 class="mb-1">
+                    {{ autorisation.nom }} {{ autorisation.prenom }}
+                  </h6>
+                  <small
+                    >{{ autorisation.date_creation.strftime('%d/%m/%Y')
+                    }}</small
+                  >
+                </div>
+                <p class="mb-1">{{ autorisation.motif }}</p>
+                <small class="text-muted"
+                  >Statut: {{ autorisation.statut }}</small
+                >
+              </a>
+              {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted">Aucune autorisation récente</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

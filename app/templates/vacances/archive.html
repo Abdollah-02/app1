@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+  <div class="col-md-8">
+    <h2>Archive des Demandes de Vacances</h2>
+  </div>
+  <div class="col-md-4 text-end">
+    <a href="{{ url_for('vacances.liste_vacances') }}" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i> Retour
+    </a>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="GET" class="row g-3">
+      <!-- Search -->
+      <div class="col-md-3">
+        <label for="search" class="form-label">Rechercher</label>
+        <input type="text" class="form-control" id="search" name="search" 
+               value="{{ current_search }}" 
+               placeholder="Nom, nom alternatif, unité, fonction, intérêt...">
+        <small class="form-text text-muted">Recherche dans tous les champs</small>
+      </div>
+      
+      <!-- Year Filter -->
+      <div class="col-md-3">
+        <label for="year" class="form-label">Année</label>
+        <select class="form-select" id="year" name="year">
+          <option value="">Toutes les années</option>
+          {% for year in years %}
+          <option value="{{ year }}" {% if year == current_year %}selected{% endif %}>
+            {{ year }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      
+      <!-- Status Filter -->
+      <div class="col-md-3">
+        <label for="status" class="form-label">Statut</label>
+        <select class="form-select" id="status" name="status">
+          <option value="">Tous les statuts</option>
+          <option value="En attente" {% if current_status == 'En attente' %}selected{% endif %}>En attente</option>
+          <option value="Approuvé" {% if current_status == 'Approuvé' %}selected{% endif %}>Approuvé</option>
+          <option value="Refusé" {% if current_status == 'Refusé' %}selected{% endif %}>Refusé</option>
+        </select>
+      </div>
+      
+      <!-- Type Filter -->
+      <div class="col-md-3">
+        <label for="type" class="form-label">Type de Vacances</label>
+        <select class="form-select" id="type" name="type">
+          <option value="">Tous les types</option>
+          {% for type in types %}
+          <option value="{{ type }}" {% if type == current_type %}selected{% endif %}>
+            {{ type }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      
+      <!-- Filter Button -->
+      <div class="col-12">
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-filter"></i> Filtrer
+        </button>
+        <a href="{{ url_for('vacances.archive_vacances') }}" class="btn btn-secondary">
+          <i class="fas fa-undo"></i> Réinitialiser
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Results Table -->
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Date de Création</th>
+            <th>Nom et Prénom</th>
+            <th>Type</th>
+            <th>Unité</th>
+            <th>Fonction</th>
+            <th>Période</th>
+            <th>Jours</th>
+            <th>Année</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for demande in demandes %}
+          <tr class="main-row" data-bs-toggle="collapse" data-bs-target="#details-{{ demande.id }}" style="cursor: pointer;">
+            <td><i class="fas fa-chevron-down"></i></td>
+            <td>{{ demande.date_creation.strftime('%d/%m/%Y') }}</td>
+            <td>{{ demande.nom_prenom }}</td>
+            <td>{{ demande.type_vacances }}</td>
+            <td>{{ demande.unite }}</td>
+            <td>{{ demande.emploi }}</td>
+            <td>
+              Du {{ demande.date_sortie.strftime('%d/%m/%Y') }}<br>
+              Au {{ demande.date_entree.strftime('%d/%m/%Y') }}
+            </td>
+            <td>{{ demande.nombre_jours }}</td>
+            <td>
+              {% if demande.annee_exercice %}
+                {{ demande.annee_exercice }}
+              {% else %}
+                {{ demande.annee_en_cours }}
+              {% endif %}
+            </td>
+            <td>
+              <span class="badge bg-{{ 'success' if demande.statut == 'Approuvé' 
+                                     else 'danger' if demande.statut == 'Refusé'
+                                     else 'warning' }}">
+                {{ demande.statut }}
+              </span>
+            </td>
+            <td>
+              <div class="btn-group">
+                <a href="{{ url_for('vacances.voir_demande', id=demande.id) }}" 
+                   class="btn btn-sm btn-info" title="Voir">
+                  <i class="fas fa-eye"></i>
+                </a>
+                {% if current_user.role == 'DG' %}
+                <a href="{{ url_for('vacances.modifier_demande', id=demande.id) }}" 
+                   class="btn btn-sm btn-warning" title="Modifier">
+                  <i class="fas fa-edit"></i>
+                </a>
+                {% endif %}
+                <a href="{{ url_for('vacances.telecharger_pdf', id=demande.id) }}" 
+                   class="btn btn-sm btn-secondary" title="Télécharger PDF">
+                  <i class="fas fa-file-pdf"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+          <tr class="collapse" id="details-{{ demande.id }}">
+            <td colspan="11">
+              <div class="card card-body bg-light">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h6 class="mb-3">Informations Supplémentaires</h6>
+                    <dl class="row">
+                      <dt class="col-sm-4">Nom Alternatif</dt>
+                      <dd class="col-sm-8">{{ demande.nom_alternatif or 'Non spécifié' }}</dd>
+                      
+                      <dt class="col-sm-4">Avis d'Intérêt Direct</dt>
+                      <dd class="col-sm-8">{{ demande.interet or 'Non spécifié' }}</dd>
+                      
+                      <dt class="col-sm-4">Lieu de Résidence</dt>
+                      <dd class="col-sm-8">{{ demande.lieu_residence }}</dd>
+                    </dl>
+                  </div>
+                  <div class="col-md-6">
+                    <h6 class="mb-3">Cadre de Services de Gestion</h6>
+                    <dl class="row">
+                      <dt class="col-sm-4">Résiduel</dt>
+                      <dd class="col-sm-8">{{ demande.residuel }}</dd>
+                      
+                      <dt class="col-sm-4">Année d'exercice</dt>
+                      <dd class="col-sm-8">{{ demande.annee_exercice or 'Non spécifié' }}</dd>
+                      
+                      <dt class="col-sm-4">Année en Cours</dt>
+                      <dd class="col-sm-8">{{ demande.annee_en_cours }}</dd>
+                      
+                      <dt class="col-sm-4">Total</dt>
+                      <dd class="col-sm-8">{{ demande.total }}</dd>
+                      
+                      {% if demande.residuel_clarification %}
+                      <dt class="col-sm-4">Clarification</dt>
+                      <dd class="col-sm-8">{{ demande.residuel_clarification }}</dd>
+                      {% endif %}
+                    </dl>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="11" class="text-center">Aucune demande trouvée</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Auto-submit form when filters change
+  const filterForm = document.querySelector('form');
+  const filterInputs = filterForm.querySelectorAll('select, input[type="text"]');
+  
+  filterInputs.forEach(input => {
+    input.addEventListener('change', () => {
+      filterForm.submit();
+    });
+  });
+
+  // Toggle chevron icon on row expansion
+  document.querySelectorAll('.main-row').forEach(row => {
+    row.addEventListener('click', function() {
+      const icon = this.querySelector('.fas');
+      icon.classList.toggle('fa-chevron-down');
+      icon.classList.toggle('fa-chevron-up');
+    });
+  });
+});
+</script>
+{% endblock %} 

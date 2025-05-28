@@ -1,0 +1,534 @@
+{% extends "base.html" %} {% block content %}
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+<div class="container mt-4">
+  <div class="mb-4">
+    <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Retour</a>
+
+    {% if current_user.is_authenticated %} {% if current_user.role == 'DG' %} {%
+    if autorisation.statut == 'En attente' %}
+    <a
+      href="{{ url_for('main.approuver_autorisation', id=autorisation.id) }}"
+      class="btn btn-success"
+    >
+      <i class="fas fa-check"></i> Approuver
+    </a>
+    <a
+      href="{{ url_for('main.refuser_autorisation', id=autorisation.id) }}"
+      class="btn btn-warning"
+    >
+      <i class="fas fa-times"></i> Refuser
+    </a>
+    {% endif %}
+    <a
+      href="{{ url_for('main.modifier_autorisation', id=autorisation.id) }}"
+      class="btn btn-primary"
+    >
+      <i class="fas fa-edit"></i> Modifier
+    </a>
+    <a
+      href="{{ url_for('main.supprimer_autorisation', id=autorisation.id) }}"
+      class="btn btn-danger"
+      onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette autorisation ?');"
+    >
+      <i class="fas fa-trash"></i> Supprimer
+    </a>
+    {% endif %} {% if current_user.role == 'HR' %}
+    <button onclick="window.print()" class="btn btn-primary">
+      <i class="fas fa-print"></i> Imprimer
+    </button>
+    <a
+      href="{{ url_for('main.telecharger_pdf', id=autorisation.id) }}"
+      class="btn btn-danger"
+    >
+      <i class="fas fa-file-pdf"></i> PDF
+    </a>
+    {% endif %} {% endif %}
+  </div>
+
+  <!-- Format d'impression -->
+  <div class="print-section">
+    <!-- En-tête unique -->
+    <div class="header-section">
+      <div class="header-content">
+        <img
+          src="{{ url_for('static', filename='images/gmi-logo.png') }}"
+          alt="GMI Logo"
+          class="company-logo"
+        />
+        <div class="header-text">
+          <h4 class="company-name">EURL G.M.I ALGÉRIE</h4>
+          <p class="mb-0">
+            FABRICATION & MONTAGE DES ÉQUIPEMENTS ÉLECTRIQUES ET HYDRAULIQUES
+          </p>
+          <p class="mb-0">GROUPES ÉLECTROGÈNES, GROUPES DE SOUDAGE</p>
+          <p class="mb-0">ZONE INDUSTRIELLE Oued Sly W. Chlef</p>
+          <p class="mb-2">Tél: 020656464 / 020656666 | Fax: 020656588</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Première version -->
+    <div class="autorisation-section">
+      <div class="text-center title-section">
+        <h5 class="doc-title">
+          AUTORISATION DE SORTIE<br />POUR DES RAISONS PERSONNELLES
+        </h5>
+        <p class="small text-muted">(Exemplaire Entreprise)</p>
+      </div>
+
+      <div class="content-section">
+        <div class="field-row name-row">
+          <span class="field-label">NOM : </span>
+          <span class="field-value">{{ autorisation.nom }}</span>
+          <span class="field-label ml-4">PRÉNOM : </span>
+          <span class="field-value">{{ autorisation.prenom }}</span>
+        </div>
+
+        <div class="field-row date-row">
+          <span class="field-label">DATE DE SORTIE : </span>
+          <span class="field-value"
+            >{{ autorisation.date_sortie.strftime('%d/%m/%Y') }}</span
+          >
+          <span class="field-label ml-4">HEURE : </span>
+          <span class="field-value time"
+            >{{ autorisation.heure_sortie.strftime('%H:%M') }}</span
+          >
+        </div>
+
+        <div class="field-row date-row">
+          <span class="field-label">DATE DE RETOUR : </span>
+          <span class="field-value"
+            >{{ autorisation.date_retour.strftime('%d/%m/%Y') }}</span
+          >
+          <span class="field-label ml-4">HEURE : </span>
+          <span class="field-value time"
+            >{{ autorisation.heure_retour.strftime('%H:%M') }}</span
+          >
+        </div>
+
+        <div class="field-row full-row">
+          <span class="field-label">DESTINATION : </span>
+          <span class="field-value">{{ autorisation.destination }}</span>
+        </div>
+
+        <div class="field-row full-row">
+          <span class="field-label">MOTIF DE SORTIE : </span>
+          <span class="field-value">{{ autorisation.motif }}</span>
+        </div>
+
+        <div class="field-row">
+          {% if current_user.role == 'DG' %}
+          <span class="field-label">CRÉÉ PAR :</span>
+          <span class="field-value">{{ autorisation.createur }}</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="signature-section">
+        <div class="signature-box">
+          <p>RESPONSABLE HIÉRARCHIQUE /</p>
+          {% if autorisation.signature_responsable %}
+          <p class="text-success">Document approuvé</p>
+          {% if autorisation.signature_data %}
+          <!-- Only show signature if it exists (DG approval) -->
+          <img
+            src="{{ autorisation.signature_data }}"
+            alt="Signature"
+            class="signature-image"
+          />
+          {% endif %} {% endif %} {% if autorisation.statut == 'Refusé' %}
+          <p class="text-danger">Document refusé</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Ligne de séparation -->
+    <hr />
+
+    <!-- Deuxième version -->
+    <div class="autorisation-section">
+      <div class="text-center title-section">
+        <h5 class="doc-title">
+          AUTORISATION DE SORTIE<br />POUR DES RAISONS PERSONNELLES
+        </h5>
+        <p class="small text-muted">(Exemplaire Employé)</p>
+      </div>
+
+      <div class="content-section">
+        <div class="field-row name-row">
+          <span class="field-label">NOM : </span>
+          <span class="field-value">{{ autorisation.nom }}</span>
+          <span class="field-label ml-4">PRÉNOM : </span>
+          <span class="field-value">{{ autorisation.prenom }}</span>
+        </div>
+
+        <div class="field-row date-row">
+          <span class="field-label">DATE DE SORTIE : </span>
+          <span class="field-value"
+            >{{ autorisation.date_sortie.strftime('%d/%m/%Y') }}</span
+          >
+          <span class="field-label ml-4">HEURE : </span>
+          <span class="field-value time"
+            >{{ autorisation.heure_sortie.strftime('%H:%M') }}</span
+          >
+        </div>
+
+        <div class="field-row date-row">
+          <span class="field-label">DATE DE RETOUR : </span>
+          <span class="field-value"
+            >{{ autorisation.date_retour.strftime('%d/%m/%Y') }}</span
+          >
+          <span class="field-label ml-4">HEURE : </span>
+          <span class="field-value time"
+            >{{ autorisation.heure_retour.strftime('%H:%M') }}</span
+          >
+        </div>
+
+        <div class="field-row full-row">
+          <span class="field-label">DESTINATION : </span>
+          <span class="field-value">{{ autorisation.destination }}</span>
+        </div>
+
+        <div class="field-row full-row">
+          <span class="field-label">MOTIF DE SORTIE : </span>
+          <span class="field-value">{{ autorisation.motif }}</span>
+        </div>
+      </div>
+
+      <div class="signature-section">
+        <div class="signature-box">
+          <p>RESPONSABLE HIÉRARCHIQUE /</p>
+          {% if autorisation.signature_responsable %}
+          <p class="text-success">Document approuvé</p>
+          {% if autorisation.signature_data %}
+          <!-- Only show signature if it exists (DG approval) -->
+          <img
+            src="{{ autorisation.signature_data }}"
+            alt="Signature"
+            class="signature-image"
+          />
+          {% endif %} {% endif %} {% if autorisation.statut == 'Refusé' %}
+          <p class="text-danger">Document refusé</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add this hidden form at the end of the file, right before the script tag -->
+<form
+  id="signatureForm"
+  action="{{ url_for('main.approuver_autorisation', id=autorisation.id) }}"
+  method="POST"
+  style="display: none"
+>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+  <input type="hidden" name="signature" id="signatureData" />
+</form>
+
+<!-- Replace the signature pad section with this -->
+{% if current_user.role == 'DG' and autorisation.statut == 'En attente' %}
+<div class="signature-box">
+  <a
+    href="{{ url_for('main.approuver_autorisation', id=autorisation.id) }}"
+    class="btn btn-success"
+  >
+    <i class="fas fa-check"></i> Approuver avec signature
+  </a>
+</div>
+{% endif %} {% endblock %} {% block scripts %} {{ super() }}
+<!-- Add this script tag for the SignaturePad library -->
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (document.getElementById("signaturePad")) {
+      const canvas = document.getElementById("signaturePad");
+      const signaturePad = new SignaturePad(canvas, {
+        backgroundColor: "rgb(255, 255, 255)",
+      });
+
+      document
+        .getElementById("clearSignature")
+        .addEventListener("click", function () {
+          signaturePad.clear();
+        });
+
+      document
+        .getElementById("saveSignature")
+        .addEventListener("click", function () {
+          if (!signaturePad.isEmpty()) {
+            // Get the signature data and submit the pre-built form
+            document.getElementById("signatureData").value =
+              signaturePad.toDataURL();
+            document.getElementById("signatureForm").submit();
+          } else {
+            alert("Veuillez signer le document avant de l'approuver");
+          }
+        });
+    }
+  });
+</script>
+<style>
+  /* Styles pour l'écran */
+  .print-section {
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 20px;
+    background: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .header-section {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .company-logo {
+    max-width: 150px;
+    height: auto;
+    flex-shrink: 0;
+  }
+
+  .header-text {
+    flex: 1;
+    text-align: left;
+  }
+
+  .company-name {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+  }
+
+  .doc-title {
+    font-weight: bold;
+    margin: 0.5rem 0;
+  }
+
+  hr {
+    border: 1px solid #000;
+    margin: 1rem 0;
+  }
+
+  .field-row {
+    margin: 12px 0;
+    line-height: 1.5;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+  }
+
+  .field-label {
+    font-weight: bold;
+    white-space: nowrap;
+  }
+
+  .field-value {
+    border-bottom: 1px dotted #000;
+    flex: 1;
+    margin: 0 10px;
+    min-width: 100px;
+    padding: 0 5px;
+  }
+
+  /* Ajustements spécifiques pour certains champs */
+  .field-row.name-row .field-value {
+    flex: 0.5; /* Pour que nom et prénom aient la même taille */
+  }
+
+  .field-row.date-row .field-value {
+    flex: 0.4; /* Pour la date */
+  }
+
+  .field-row.date-row .field-value.time {
+    flex: 0.2; /* Pour l'heure */
+  }
+
+  .field-row.full-row .field-value {
+    flex: 1; /* Pour destination et motif */
+  }
+
+  .ml-4 {
+    margin-left: 1.5rem;
+  }
+
+  .signature-section {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20pt;
+  }
+
+  .signature-box {
+    text-align: right;
+    min-width: 200px;
+  }
+
+  .signature-box p {
+    margin: 0;
+  }
+
+  /* Styles pour l'impression */
+  @media print {
+    @page {
+      size: A4;
+      margin: 8mm 10mm;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-size: 9pt;
+    }
+
+    .btn,
+    nav {
+      display: none !important;
+    }
+
+    .container {
+      width: 100% !important;
+      max-width: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    .print-section {
+      padding: 0;
+      box-shadow: none;
+    }
+
+    .header-section {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 8pt;
+    }
+
+    .company-logo {
+      max-width: 100px;
+      height: auto;
+    }
+
+    .header-text {
+      flex: 1;
+      text-align: left;
+    }
+
+    .header-text p {
+      margin: 0;
+      line-height: 1.1;
+      font-size: 9pt;
+    }
+
+    .company-name {
+      font-size: 12pt;
+      margin-bottom: 2pt;
+    }
+
+    .autorisation-section {
+      margin-bottom: 8pt;
+    }
+
+    .title-section {
+      margin-bottom: 8pt;
+    }
+
+    .doc-title {
+      font-size: 10pt;
+      margin: 2pt 0;
+    }
+
+    .field-row {
+      margin: 4pt 0;
+      line-height: 1.1;
+    }
+
+    .field-label {
+      font-size: 9pt;
+    }
+
+    .field-value {
+      min-width: 50pt;
+      margin: 0 4pt;
+      font-size: 9pt;
+    }
+
+    .signature-section {
+      margin-top: 8pt;
+    }
+
+    hr {
+      margin: 6pt 0;
+      border-width: 0.5pt;
+    }
+
+    .small.text-muted {
+      font-size: 7pt;
+      color: #666 !important;
+    }
+
+    .signature-box {
+      min-width: 120px;
+    }
+
+    .signature-box p {
+      margin: 0;
+      font-size: 9pt;
+    }
+
+    .text-success,
+    .text-danger {
+      font-size: 8pt;
+    }
+  }
+
+  .signature-pad-container {
+    margin-top: 1rem;
+    border: 1px solid #dee2e6;
+    padding: 10px;
+    background-color: #fff;
+  }
+
+  #signaturePad {
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+  }
+
+  .signature-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .signature-image {
+    max-width: 150px;
+    max-height: 75px;
+    margin-top: 10px;
+    border: 1px solid #dee2e6;
+  }
+
+  @media print {
+    .signature-pad-container {
+      display: none;
+    }
+  }
+</style>
+{% endblock %}

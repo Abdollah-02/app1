@@ -1,0 +1,403 @@
+{% extends "base.html" %} {% block content %}
+<div class="row mb-4">
+  <div class="col-md-12">
+    <h2>Nouvelle Demande de Vacances</h2>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <form method="POST" class="needs-validation" novalidate>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <div class="form-group mb-3">
+            <label for="unite">Unité</label>
+            <input
+              type="text"
+              class="form-control"
+              id="unite"
+              name="unite"
+              required
+            />
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="type_vacances">Type de Vacances</label>
+            <select
+              class="form-control"
+              id="type_vacances"
+              name="type_vacances"
+              required
+            >
+              <option value="">Sélectionnez...</option>
+              <option value="Annuel">Annuel</option>
+              <option value="Compensatoire">Compensatoire</option>
+              <option value="RECUPERATION">RECUPERATION</option>
+              <option value="EXCEPTIONNEL">EXCEPTIONNEL</option>
+            </select>
+            <div class="invalid-feedback">
+              Veuillez sélectionner un type de vacances
+            </div>
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="nom_prenom">Nom et Prénom</label>
+            <input
+              type="text"
+              class="form-control"
+              id="nom_prenom"
+              name="nom_prenom"
+              required
+            />
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="emploi">Fonction</label>
+            <input
+              type="text"
+              class="form-control"
+              id="emploi"
+              name="emploi"
+              required
+            />
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="interet">Avis d'Intérêt Direct</label>
+            <input
+              type="text"
+              class="form-control"
+              id="interet"
+              name="interet"
+            />
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group mb-3">
+            <label for="nombre_jours">Nombre de Jours</label>
+            <input
+              type="number"
+              class="form-control"
+              id="nombre_jours"
+              name="nombre_jours"
+              required
+              min="0.5"
+              step="0.5"
+              value="1"
+            />
+            <small class="form-text text-muted"
+              >Vous pouvez entrer des demi-journées (ex: 2.5, 10.5 jours)</small
+            >
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="date_sortie">Date de Sortie</label>
+            <input
+              type="date"
+              class="form-control"
+              id="date_sortie"
+              name="date_sortie"
+              required
+            />
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="date_entree">Date d'Entrée</label>
+            <input
+              type="date"
+              class="form-control"
+              id="date_entree"
+              name="date_entree"
+              required
+            />
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="lieu_residence">Lieu de Résidence</label>
+            <input
+              type="text"
+              class="form-control"
+              id="lieu_residence"
+              name="lieu_residence"
+              required
+            />
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="nom_alternatif">Nom Alternatif</label>
+            <input
+              type="text"
+              class="form-control"
+              id="nom_alternatif"
+              name="nom_alternatif"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Cadre de Services de Gestion -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <h4 class="mb-3">Cadre de Services de Gestion</h4>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group mb-3">
+            <label for="residuel" class="form-label">Résiduel</label>
+            <input
+              type="number"
+              class="form-control"
+              id="residuel"
+              name="residuel"
+              value="0"
+              min="0"
+              step="0.5"
+              required
+            />
+            <small class="form-text text-muted"
+              >Vous pouvez entrer des demi-journées (ex: 2.5)</small
+            >
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group mb-3">
+            <label for="annee_exercice" class="form-label"
+              >Année d'exercice (optionnel)</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="annee_exercice"
+              name="annee_exercice"
+              placeholder="Ex: 2023 pour congés de 2023"
+            />
+            <small class="form-text text-muted"
+              >Laissez vide pour l'année en cours</small
+            >
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group mb-3">
+            <label for="annee_en_cours" class="form-label"
+              >Année en Cours</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="annee_en_cours"
+              name="annee_en_cours"
+              value="0"
+              min="0"
+              required
+            />
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group mb-3">
+            <label for="total" class="form-label">Total</label>
+            <input
+              type="number"
+              class="form-control"
+              id="total"
+              name="total"
+              value="0"
+              min="0"
+              required
+              readonly
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-12">
+          <label for="residuel_clarification" class="form-label"
+            >Clarification des jours restants</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            id="residuel_clarification"
+            name="residuel_clarification"
+            placeholder="Ex: année passée"
+          />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12 text-end">
+          <a
+            href="{{ url_for('vacances.liste_vacances') }}"
+            class="btn btn-secondary"
+            >Annuler</a
+          >
+          <button type="submit" class="btn btn-primary">
+            Soumettre la Demande
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %} {% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Form validation
+    const form = document.querySelector("form");
+    const nombreJoursInput = document.getElementById("nombre_jours");
+    const residuelInput = document.getElementById("residuel");
+    const dateSortieInput = document.getElementById("date_sortie");
+    const dateEntreeInput = document.getElementById("date_entree");
+    const typeVacancesSelect = document.getElementById("type_vacances");
+
+    // Function to handle decimal input
+    function handleDecimalInput(input) {
+      input.addEventListener("input", function (e) {
+        let value = this.value;
+
+        // Allow decimal input
+        if (value !== "") {
+          value = parseFloat(value);
+          if (isNaN(value)) {
+            value = 0;
+          }
+          // Round to nearest 0.5
+          value = Math.round(value * 2) / 2;
+          if (value < parseFloat(this.min)) {
+            value = parseFloat(this.min);
+          }
+          this.value = value;
+        }
+      });
+
+      // Handle keyboard events for decimal input
+      input.addEventListener("keydown", function (e) {
+        // Allow: backspace, delete, tab, escape, enter, decimal point
+        if (
+          [46, 8, 9, 27, 13, 110, 190].indexOf(e.keyCode) !== -1 ||
+          // Allow: Ctrl+A, Command+A
+          (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+          // Allow: home, end, left, right, down, up
+          (e.keyCode >= 35 && e.keyCode <= 40) ||
+          // Allow numbers
+          (e.keyCode >= 48 && e.keyCode <= 57) ||
+          // Allow numpad numbers
+          (e.keyCode >= 96 && e.keyCode <= 105)
+        ) {
+          return;
+        }
+        // Stop all other keypresses
+        e.preventDefault();
+      });
+    }
+
+    // Apply decimal input handling to both inputs
+    handleDecimalInput(nombreJoursInput);
+    handleDecimalInput(residuelInput);
+
+    // Set default date_sortie to today if not set
+    if (!dateSortieInput.value) {
+      const today = new Date();
+      dateSortieInput.value = today.toISOString().split("T")[0];
+    }
+
+    function addDays(date, days) {
+      let currentDate = new Date(date);
+      // For whole days, add as normal
+      const wholeDays = Math.floor(days);
+      currentDate.setDate(currentDate.getDate() + wholeDays);
+
+      // For half days, we don't add an extra day
+      // The half day will be handled in the UI display
+      return currentDate;
+    }
+
+    function updateDates() {
+      const nombreJours = parseFloat(nombreJoursInput.value) || 0;
+      const dateSortie = new Date(dateSortieInput.value);
+
+      if (nombreJours > 0 && !isNaN(dateSortie.getTime())) {
+        // Calculate entry date
+        const dateEntree = addDays(dateSortie, nombreJours);
+        dateEntreeInput.value = dateEntree.toISOString().split("T")[0];
+      }
+    }
+
+    // Update dates when nombre_jours or date_sortie changes
+    nombreJoursInput.addEventListener("input", updateDates);
+    dateSortieInput.addEventListener("change", updateDates);
+
+    // Calculate total automatically
+    function calculateTotal() {
+      const residuel =
+        parseFloat(document.getElementById("residuel").value) || 0;
+      const anneeEnCours =
+        parseFloat(document.getElementById("annee_en_cours").value) || 0;
+      const total = Math.round((residuel + anneeEnCours) * 2) / 2; // Round to nearest 0.5
+      document.getElementById("total").value = total;
+    }
+
+    // Add event listeners for calculation
+    document
+      .getElementById("residuel")
+      .addEventListener("input", calculateTotal);
+    document
+      .getElementById("annee_en_cours")
+      .addEventListener("input", calculateTotal);
+
+    // Calculate initial total
+    calculateTotal();
+
+    // Validate form before submission
+    form.addEventListener("submit", function (event) {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      // Additional validation
+      if (!typeVacancesSelect.value) {
+        event.preventDefault();
+        typeVacancesSelect.classList.add("is-invalid");
+        return false;
+      }
+
+      const dateSortie = new Date(dateSortieInput.value);
+      const dateEntree = new Date(dateEntreeInput.value);
+
+      if (dateEntree < dateSortie) {
+        event.preventDefault();
+        alert("La date d'entrée doit être postérieure à la date de sortie");
+        return false;
+      }
+
+      // Validate nombre_jours
+      const nombreJours = parseFloat(nombreJoursInput.value);
+      if (nombreJours < 0.5) {
+        event.preventDefault();
+        alert("Le nombre de jours doit être d'au moins 0.5 jour");
+        return false;
+      }
+
+      // Validate that only .0 or .5 values are entered
+      if ((nombreJours * 10) % 5 !== 0) {
+        event.preventDefault();
+        alert(
+          "Veuillez entrer un nombre de jours valide (ex: 1, 1.5, 2, 2.5, etc.)"
+        );
+        return false;
+      }
+
+      form.classList.add("was-validated");
+    });
+
+    // Remove invalid class when type is selected
+    typeVacancesSelect.addEventListener("change", function () {
+      if (this.value) {
+        this.classList.remove("is-invalid");
+      }
+    });
+  });
+</script>
+{% endblock %}
