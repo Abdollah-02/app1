@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: app1
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn run:app
+    plan: free
